@@ -1,0 +1,36 @@
+---
+- name: Create Homepage folder.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  become: false
+  loop: 
+    - "{{ config_dir }}/homepage/"
+    - "{{ config_dir }}/homepage/config/"
+
+- name: Copy Homepage config file to Pi.
+  ansible.builtin.copy:
+    src: "files/homepage/{{ item }}"
+    dest: "{{ config_dir }}/homepage/config/{{ item }}"
+    mode: '0640'
+  become: false
+  loop: 
+    - bookmarks.yaml
+    - docker.yaml
+    - services.yaml
+    - settings.yaml
+    - widgets.yaml
+
+- name: Copy Homepage docker-compose to Pi.
+  ansible.builtin.template:
+    src: templates/homepage-docker-compose.yaml.j2
+    dest: "{{ config_dir }}/homepage/docker-compose.yaml"
+    mode: '0640'
+  become: false
+
+- name: Ensure Homepage is running.
+  community.docker.docker_compose:
+    project_src: "{{ config_dir }}/homepage/"
+    build: false
+  become: false

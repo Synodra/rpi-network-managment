@@ -1,0 +1,31 @@
+---
+- hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Load configuration (with defaults from example file).
+      ansible.builtin.include_vars: "{{ item }}"
+      loop:
+        - default.config.yaml
+        - config.yaml
+
+  handlers:
+    - name: Include handlers.
+      ansible.builtin.import_tasks: tasks/handlers.yaml
+
+  tasks:
+    - name: Set up Homepage.
+      ansible.builtin.include_tasks: tasks/homepage.yaml
+      when: homepage_enable
+
+    - name: Set up PI Hole.
+      ansible.builtin.include_tasks: tasks/pihole.yaml
+      when: pihole_enable
+
+    - name: Set up monitoring backend.
+      ansible.builtin.include_tasks: tasks/monitoring_backend.yaml
+      when: monitoring_enable
+
+    - name: Set up Internet monitoring.
+      ansible.builtin.include_tasks: tasks/my_task.yaml
+      when: internet_monitoring_enable

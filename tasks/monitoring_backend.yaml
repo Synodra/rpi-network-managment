@@ -1,0 +1,30 @@
+---
+- name: Create monitoring backend folders.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  become: false
+  loop: 
+    - "{{ config_dir }}/monitoring_backend/"
+    - "{{ config_dir }}/monitoring_backend/grafana/"
+    - "{{ config_dir }}/monitoring_backend/prometheus/"
+
+- name: Copy monitoring backend docker-compose to Pi.
+  ansible.builtin.template:
+    src: templates/{{ item.src }}
+    dest: "{{ config_dir }}/monitoring_backend/{{ item.dest }}"
+    mode: '0644'
+  notify: Restart monitoring-backend
+  become: false
+  loop: 
+    - src: monitoring-docker-compose.yaml.j2
+      dest: docker-compose.yaml
+    - src: prometheus.yml.j2
+      dest: prometheus/prometheus.yml
+
+- name: Ensure Grafana is running.
+  community.docker.docker_compose:
+    project_src: "{{ config_dir }}/monitoring_backend/"
+    build: false
+  become: false

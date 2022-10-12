@@ -1,0 +1,14 @@
+---
+- name: Restart pi-hole
+  community.docker.docker_compose:
+    project_src: "{{ config_dir }}/pi-hole/"
+    build: false
+    restarted: true
+  become: false
+
+- name: Restart monitoring-backend
+  community.docker.docker_compose:
+    project_src: "{{ config_dir }}/monitoring_backend/"
+    build: false
+    restarted: true
+  become: false
