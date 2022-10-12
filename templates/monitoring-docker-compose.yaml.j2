@@ -13,26 +13,35 @@ volumes:
 
 networks:
   back-tier:
-    driver : bridge #Allow the network to be shared with an other docker-compose
+    # Allow the network to be shared with an other docker-compose
+    driver : bridge 
 
 services:
-#   prometheus:
-#     image: prom/prometheus:latest
-#     container_name: prometheus
-#     restart: always
-#     networks: 
-#       - back-tier
-#     ports:
-#       - 9090:9090
-#     volumes:
-#       - $HOME/docker/prometheus/config:/etc/prometheus/
-#       - $HOME/docker/prometheus/data:/prometheus
-#     command:
-#       - '--config.file=/etc/prometheus/prometheus.yml'
-#       - '--storage.tsdb.path=/prometheus'
-#       - '--storage.tsdb.retention.time=90d'
-#       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-#       - '--web.console.templates=/usr/share/prometheus/consoles'
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    networks: 
+      - back-tier
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=90d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    labels:
+      - homepage.group=Utilities
+      - homepage.name=Prometheus
+      - homepage.icon=prometheus.png
+      - homepage.href=http://{{ ip_adress }}:9090/
+      - homepage.description=An application used for event monitoring and alerting.
+      - homepage.server=localhost
+      - homepage.container=prometheus
   
   grafana:
     image: grafana/grafana:latest
