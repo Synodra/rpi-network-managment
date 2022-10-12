@@ -1,0 +1,23 @@
+---
+# Location where configuration files will be stored.
+config_dir: '~'
+
+# Server IP
+ip_adress: "192.168.1.1"
+
+# Homepage configuration
+homepage_enable: true
+
+# PI-Hole configuration
+pihole_enable: false
+pihole_timezone: Europe/Paris
+pihole_password: "change-this-password"
+
+# Monitoring backend configuration
+monitoring_enable: false
+monitoring_grafana_admin_user: "admin"
+monitoring_grafana_admin_password: "change-this-password"
+
+# Internet monitoring configuration
+internet_monitoring_enable: false
+monitoring_speedtest_interval: 60m

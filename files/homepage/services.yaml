@@ -1,0 +1,30 @@
+---
+# For configuration options and examples, please see:
+# https://github.com/benphelps/homepage/wiki/Services
+
+- Networking:
+    - Pi-hole:
+        icon: pihole.png
+        href: http://192.168.1.11/admin/ 
+        description: Homepage is awesome
+        server: localhost
+        container: pihole
+        widget:
+          type: pihole
+          url: http://192.168.1.11
+
+    - Speedtest:
+        icon: speedtest-tracker.png 
+        href: http://192.168.1.11:8765/
+        description: Speedtest internet co every hour.
+        server: localhost
+        container: speedtest
+        widget:
+            type: speedtest
+            url: http://192.168.1.11:8765
+
+- Utilities:
+    - My Second Service:
+        href: http://localhost/
+        description: Homepage is the best
+

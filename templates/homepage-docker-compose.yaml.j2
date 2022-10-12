@@ -1,0 +1,18 @@
+---
+version: "3.5"
+services:
+  homepage:
+    image: ghcr.io/benphelps/homepage:latest
+    container_name: homepage
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - {{ config_dir }}/homepage/config/:/app/config 
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - homepage.group=Utilities
+      - homepage.name=Homepage
+      - homepage.icon=homer.png
+      - homepage.href=http://{{ ip_adress }}:3000/
+      - homepage.description=Service discovery test
