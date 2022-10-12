@@ -23,7 +23,7 @@
       when: pihole_enable
 
     - name: Set up monitoring backend.
-      ansible.builtin.include_tasks: tasks/my_task.yaml
+      ansible.builtin.include_tasks: tasks/monitoring_backend.yaml
       when: monitoring_enable
 
     - name: Set up Internet monitoring.

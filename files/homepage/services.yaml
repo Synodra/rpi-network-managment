@@ -14,7 +14,4 @@
             url: http://192.168.1.11:8765
 
 - Utilities:
-    - My Second Service:
-        href: http://localhost/
-        description: Homepage is the best
 

@@ -1,0 +1,68 @@
+# --- Pre docker-compose run configuration
+# 1. Retrive grafana.ini default config by running the following command :
+# docker run --rm --entrypoint /bin/bash grafana/grafana:latest -c 'cat $GF_PATHS_CONFIG' > grafana.ini
+# 2. Make sure your local directory is owned by the default Grafana user ID 472:472 by running the following command :
+# chown 472:472 $HOME/grafana/data
+
+---
+version: "3.5"
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
+networks:
+  back-tier:
+    driver : bridge #Allow the network to be shared with an other docker-compose
+
+services:
+#   prometheus:
+#     image: prom/prometheus:latest
+#     container_name: prometheus
+#     restart: always
+#     networks: 
+#       - back-tier
+#     ports:
+#       - 9090:9090
+#     volumes:
+#       - $HOME/docker/prometheus/config:/etc/prometheus/
+#       - $HOME/docker/prometheus/data:/prometheus
+#     command:
+#       - '--config.file=/etc/prometheus/prometheus.yml'
+#       - '--storage.tsdb.path=/prometheus'
+#       - '--storage.tsdb.retention.time=90d'
+#       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+#       - '--web.console.templates=/usr/share/prometheus/consoles'
+  
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    networks: 
+      - back-tier
+    ports:
+      - 3030:3000
+    volumes:
+      - grafana_data:/var/lib/grafana # data path
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - GF_SECURITY_ADMIN_USER={{ monitoring_grafana_admin_user }}
+      - GF_SECURITY_ADMIN_PASSWORD={{ monitoring_grafana_admin_password }}
+    labels:
+      - homepage.group=Utilities
+      - homepage.name=Grafana
+      - homepage.icon=grafana.png
+      - homepage.href=http://{{ ip_adress }}:3030/
+      - homepage.description=Grafana is an analytics & monitoring solution.
+      - homepage.server=localhost
+      - homepage.container=grafana
+  
+#  speedtest:
+#    image: miguelndecarvalho/speedtest-exporter
+#    container_name: speedtest
+#    restart: always
+#    networks:
+#      - back-tier
+#    ports:
+#      - 9798:9798
