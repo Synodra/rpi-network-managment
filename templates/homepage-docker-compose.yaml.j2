@@ -10,9 +10,3 @@ services:
     volumes:
       - './config/:/app/config'
       - /var/run/docker.sock:/var/run/docker.sock
-    labels:
-      - homepage.group=Utilities
-      - homepage.name=Homepage
-      - homepage.icon=homer.png
-      - homepage.href=http://{{ ip_adress }}:3000/
-      - homepage.description=Service discovery test
