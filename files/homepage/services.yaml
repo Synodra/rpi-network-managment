@@ -3,16 +3,6 @@
 # https://github.com/benphelps/homepage/wiki/Services
 
 - Networking:
-    - Pi-hole:
-        icon: pihole.png
-        href: http://192.168.1.11/admin/ 
-        description: Homepage is awesome
-        server: localhost
-        container: pihole
-        widget:
-          type: pihole
-          url: http://192.168.1.11
-
     - Speedtest:
         icon: speedtest-tracker.png 
         href: http://192.168.1.11:8765/

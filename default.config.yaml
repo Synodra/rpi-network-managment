@@ -6,7 +6,7 @@ config_dir: '~'
 ip_adress: "192.168.1.1"
 
 # Homepage configuration
-homepage_enable: true
+homepage_enable: false
 
 # PI-Hole configuration
 pihole_enable: false

@@ -1,7 +1,6 @@
 ---
-- name: network managment
-  hosts: all
-  become: false
+- hosts: all
+  become: true
 
   pre_tasks:
     - name: Load configuration (with defaults from example file).
@@ -11,22 +10,22 @@
         - config.yaml
 
   handlers:
-    - name: Include handlers
-      ansible.builtin.include_tasks: tasks/handlers.yaml
+    - name: Include handlers.
+      ansible.builtin.import_tasks: tasks/handlers.yaml
 
   tasks:
-    - name: Set up Homepage
+    - name: Set up Homepage.
       ansible.builtin.include_tasks: tasks/homepage.yaml
       when: homepage_enable
 
-    - name: Set up PI Hole
-      ansible.builtin.include_tasks: tasks/my_task.yaml
+    - name: Set up PI Hole.
+      ansible.builtin.include_tasks: tasks/pihole.yaml
       when: pihole_enable
 
-    - name: Set up monitoring backend
+    - name: Set up monitoring backend.
       ansible.builtin.include_tasks: tasks/my_task.yaml
       when: monitoring_enable
 
-    - name: Set up Internet monitoring
+    - name: Set up Internet monitoring.
       ansible.builtin.include_tasks: tasks/my_task.yaml
       when: internet_monitoring_enable

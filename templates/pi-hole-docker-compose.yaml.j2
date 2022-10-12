@@ -1,0 +1,33 @@
+version: "3.5"
+
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    restart: always
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+    environment:
+      TZ: {{ pihole_timezone }}
+      WEBPASSWORD: {{ pihole_password }}
+    volumes:
+      - './etc-pihole/:/etc/pihole/'
+      - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
+    # Recommended but not required (DHCP needs NET_ADMIN)
+    # https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    cap_add:
+      - NET_ADMIN
+    labels:
+      - homepage.group=Networking
+      - homepage.name=PI Hole
+      - homepage.icon=pihole.png
+      - homepage.href=http://{{ ip_adress }}/admin/
+      - homepage.description=Ad blocker
+      - homepage.server=localhost
+      - homepage.container=pihole
+      - homepage.widget.type=pihole
+      - homepage.widget.url=http://{{ ip_adress }}

@@ -2,6 +2,11 @@
 
 Raspberry PI docker configuration to run Homepage, PI-Hole, Internet Monitoring &amp; Grafana.
 
+## Launch the ansible script
+
+Launch the script `ansible-playbook playbook.yaml -K -l rpi -i inventory.ini`
+Launch a dry run `ansible-playbook playbook.yaml -K -l rpi -i inventory.ini --check`
+
 ## Security
 
 Update WEBPASSWORD with the following command : `docker exec -it pihole pihole -a -p`
