@@ -5,7 +5,7 @@
     state: directory
     mode: 0755
   become: false
-  loop: 
+  loop:
     - "{{ config_dir }}/homepage/"
     - "{{ config_dir }}/homepage/config/"
 
@@ -15,7 +15,7 @@
     dest: "{{ config_dir }}/homepage/config/{{ item }}"
     mode: '0640'
   become: false
-  loop: 
+  loop:
     - bookmarks.yaml
     - docker.yaml
     - services.yaml

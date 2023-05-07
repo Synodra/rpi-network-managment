@@ -4,12 +4,12 @@ Raspberry PI docker configuration to run Homepage, PI-Hole, Internet Monitoring 
 
 ## Launch the ansible script
 
-Launch the script `ansible-playbook playbook.yaml -K -l rpi -i inventory.ini`
-Launch a dry run `ansible-playbook playbook.yaml -K -l rpi -i inventory.ini --check`
+Launch the script `ansible-playbook playbook.yaml -K -i inventory.yaml`
+Launch a dry run `ansible-playbook playbook.yaml -K -i inventory.yaml --check`
 
 ## Security
 
-Update WEBPASSWORD with the following command : `docker exec -it pihole pihole -a -p`
+Update WEBPASSWORD with the following command : `docker exec -it pihole pihole -a -p change-this-password`
 
 ## Ports exposition
 
@@ -19,7 +19,6 @@ Update WEBPASSWORD with the following command : `docker exec -it pihole pihole -
 80:tcp  PI Hole
 3000    Homepage
 3030    Grafana
-9090    Prometheus
 9798    Speedtest
 
 ## See also

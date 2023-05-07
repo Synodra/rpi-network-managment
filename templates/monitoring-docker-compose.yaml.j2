@@ -1,48 +1,17 @@
-# --- Pre docker-compose run configuration
-# 1. Retrive grafana.ini default config by running the following command :
-# docker run --rm --entrypoint /bin/bash grafana/grafana:latest -c 'cat $GF_PATHS_CONFIG' > grafana.ini
-# 2. Make sure your local directory is owned by the default Grafana user ID 472:472 by running the following command :
-# chown 472:472 $HOME/grafana/data
-
 ---
 version: "3.5"
 
 volumes:
-  prometheus_data: {}
+  influxdb_data: {}
+  nodered_data: {}
   grafana_data: {}
 
 networks:
   back-tier:
     # Allow the network to be shared with an other docker-compose
-    driver : bridge 
-
-services:
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    restart: always
-    networks: 
-      - back-tier
-    ports:
-      - 9090:9090
-    volumes:
-      - ./prometheus/:/etc/prometheus/
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=90d'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
-    labels:
-      - homepage.group=Utilities
-      - homepage.name=Prometheus
-      - homepage.icon=prometheus.png
-      - homepage.href=http://{{ ip_adress }}:9090/
-      - homepage.description=An application used for event monitoring and alerting.
-      - homepage.server=localhost
-      - homepage.container=prometheus
+    driver : bridge
   
+services:
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -62,16 +31,96 @@ services:
       - homepage.group=Utilities
       - homepage.name=Grafana
       - homepage.icon=grafana.png
-      - homepage.href=http://{{ ip_adress }}:3030/
+      - homepage.href=http://{{ hostname }}:3030/
       - homepage.description=Grafana is an analytics & monitoring solution.
       - homepage.server=localhost
       - homepage.container=grafana
   
-#  speedtest:
-#    image: miguelndecarvalho/speedtest-exporter
-#    container_name: speedtest
-#    restart: always
-#    networks:
-#      - back-tier
-#    ports:
-#      - 9798:9798
+  influxdb:
+    image: influxdb:alpine
+    container_name: influxdb
+    restart: always
+    networks: 
+      - back-tier
+    ports:
+      - 8086:8086
+    volumes:
+      - .influxdb/config:/etc/influxdb2
+      - influxdb_data:/var/lib/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME={{ monitoring_influxdb_user }}
+      - DOCKER_INFLUXDB_INIT_PASSWORD={{ monitoring_influxdb_password }}
+      - DOCKER_INFLUXDB_INIT_ORG=org
+      - DOCKER_INFLUXDB_INIT_BUCKET={{ monitoring_influxdb_bucket }}
+      - DOCKER_INFLUXDB_INIT_RETENTION={{ monitoring_influxdb_retention }}
+    labels:
+      - homepage.group=Utilities
+      - homepage.name=influxdb
+      - homepage.icon=influxdb.png
+      - homepage.href=http://{{ hostname }}:8086/
+      - homepage.description=InfluxDB is an open source time series database for recording metrics, events, and analytics.
+      - homepage.server=localhost
+      - homepage.container=influxdb
+
+  nodered:
+    image: nodered/node-red
+    container_name: nodered
+    restart: always
+    networks: 
+      - back-tier
+    ports:
+      - 1880:1880
+    volumes:
+      - nodered_data:/data
+    environment:
+    - TZ={{ timezone }}
+    labels:
+      - homepage.group=Utilities
+      - homepage.name=NodeRed
+      - homepage.icon=nodered.png
+      - homepage.href=http://{{ hostname }}:1880/
+      - homepage.description=Low-code programming for event-driven applications.
+      - homepage.server=localhost
+      - homepage.container=nodered
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    restart: always
+    networks:
+      - back-tier
+    ports:
+      - 1883:1883
+      - 9001:9001
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  speedtest:
+    image: henrywhitaker3/speedtest-tracker:latest-arm
+    container_name: speedtest
+    restart: always
+    networks: 
+      - back-tier
+    ports:
+      - 8765:80
+    volumes:
+      - ./speedtest:/config
+    environment:
+      - TZ={{ timezone }}
+      - OOKLA_EULA_GDPR=true
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "200k"
+    labels:
+      - homepage.group=Networking
+      - homepage.name=Speedtest
+      - homepage.icon=speedtest-tracker.png
+      - homepage.href=http://{{ hostname }}:8765/
+      - homepage.description=Speedtest internet connexion every hour.
+      - homepage.server=localhost
+      - homepage.container=speedtest
+      - homepage.widget.type=speedtest
+      - homepage.widget.url=http://{{ ansible_default_ipv4.address }}:8765

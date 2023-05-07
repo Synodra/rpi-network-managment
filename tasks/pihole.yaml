@@ -32,4 +32,4 @@
 - name: Regenerate resolvconf if file is changed.
   ansible.builtin.command: resolvconf -u
   changed_when: false
-  when: resolvconf_file is changed
+  when: resolvconf_file is changed # noqa: no-handler
