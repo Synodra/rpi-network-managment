@@ -1,0 +1,68 @@
+---
+- name: Create folders for the dns installation.
+  become: false
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - "{{ config_dir }}/dns/"
+    - "{{ config_dir }}/dns/pihole/"
+    - "{{ config_dir }}/dns/unbound/"
+    - "{{ config_dir }}/dns/unbound/conf.d/"
+    - "{{ config_dir }}/dns/unbound/iana.d/"
+    - "{{ config_dir }}/dns/unbound/log.d/"
+    - "{{ config_dir }}/dns/unbound/zones.d/"
+
+- name: Copy unbound config file to Pi.
+  ansible.builtin.copy:
+    src: "files/unbound/{{ item }}"
+    dest: "{{ config_dir }}/dns/unbound/{{ item }}"
+    mode: '0640'
+  become: false
+  loop:
+    - unbound.conf
+    - conf.d/access-control.conf
+    - conf.d/interfaces.conf
+    - conf.d/logging.conf
+    - conf.d/performance.conf
+    - conf.d/remote-control.conf
+    - conf.d/security.conf
+    - conf.d/trust-anchor.conf
+    - zones.d/auth-zone.conf
+    - zones.d/local-zone.conf
+
+- name: Download root.zone
+  become: false
+  ansible.builtin.get_url:
+      url: https://www.internic.net/domain/root.zone
+      dest: "{{ config_dir }}/dns/unbound/iana.d/root.zone"
+      mode: '0440'
+
+- name: Copy Pi-hole docker-compose template to Pi.
+  become: false
+  ansible.builtin.template:
+    src: templates/dns-docker-compose.yaml.j2
+    dest: "{{ config_dir }}/dns/docker-compose.yaml"
+    mode: '0640'
+  notify: Restart dns
+
+# TODO: The first time this playbook is run, the `pi` user may not be added
+# to the `docker` group, so this task may fail.
+- name: Ensure dns is running.
+  become: false
+  community.docker.docker_compose:
+    project_src: "{{ config_dir }}/dns/"
+    build: false
+
+- name: Update resolveconf for local name server use.
+  ansible.builtin.lineinfile:
+    line: "name_servers=127.0.0.1"
+    dest: "/etc/resolvconf.conf"
+    regexp: "^#?name_servers="
+  register: resolvconf_file
+
+- name: Regenerate resolvconf if file is changed.
+  ansible.builtin.command: resolvconf -u
+  changed_when: false
+  when: resolvconf_file is changed # noqa: no-handler

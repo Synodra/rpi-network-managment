@@ -1,7 +1,7 @@
 ---
-- name: Restart pi-hole
+- name: Restart dns
   community.docker.docker_compose:
-    project_src: "{{ config_dir }}/pi-hole/"
+    project_src: "{{ config_dir }}/dns/"
     build: false
     restarted: true
   become: false

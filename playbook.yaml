@@ -19,9 +19,9 @@
       ansible.builtin.include_tasks: tasks/homepage.yaml
       when: homepage_enable
 
-    - name: Set up PI Hole.
-      ansible.builtin.include_tasks: tasks/pihole.yaml
-      when: pihole_enable
+    - name: Set up DNS.
+      ansible.builtin.include_tasks: tasks/dns.yaml
+      when: dns_enable
 
     - name: Set up monitoring backend.
       ansible.builtin.include_tasks: tasks/monitoring_backend.yaml

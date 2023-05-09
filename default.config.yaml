@@ -9,8 +9,8 @@ timezone: Europe/Paris
 # Homepage configuration
 homepage_enable: false
 
-# PI-Hole configuration
-pihole_enable: false
+# DNS configuration
+dns_enable: false
 pihole_password: "change-this-password"
 
 # Monitoring backend configuration
